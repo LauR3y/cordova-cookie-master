@@ -24,6 +24,16 @@ cookieMaster.getCookieValue('http://<some host>:<some port>', '<cookie name>', f
   }
 });
 ```
+### Get cookies
+```javascript
+cookieMaster.getCookies('http://<some host>:<some port>', function(data) {
+  console.log(data);
+}, function(error) {
+  if (error) {
+    console.log('error: ' + error);
+  }
+});
+```
 ### Set cookie value
 ```javascript
 cookieMaster.setCookieValue('http://<some host>:<some port>', '<cookie name>', '<cookie value>');
