@@ -19,6 +19,7 @@ public class CookieMaster extends CordovaPlugin {
 
   private final String TAG = "CookieMasterPlugin";
   public static final String ACTION_GET_COOKIE_VALUE = "getCookieValue";
+  public static final String ACTION_GET_COOKIES = "getCookies";
   public static final String ACTION_SET_COOKIE_VALUE = "setCookieValue";
   
   @Override
@@ -55,6 +56,32 @@ public class CookieMaster extends CordovaPlugin {
             } catch (Exception e) {
               Log.e(TAG, "Exception: " + e.getMessage());
               callbackContext.error(e.getMessage());
+            }        
+          }
+        });
+        return true;
+      } else if (ACTION_GET_COOKIES.equals(action)) {
+        final String url = args.getString(0);
+        
+        cordova.getThreadPool().execute(new Runnable() {
+          public void run() {
+            try {
+              CookieManager cookieManager = CookieManager.getInstance();
+              String[] cookies = cookieManager.getCookie(url).split("; ");
+              
+              JSONObject jsonCookies = new JSONObject();
+
+              for (int i = 0; i < cookies.length; i++) {
+                String currentCookieName = cookies[i].split("=")[0];
+                String currentCookieValue = cookies[i].split("=")[1];
+                jsonCookies.put(currentCookieName, currentCookieValue);
+              }
+
+              PluginResult res = new PluginResult(PluginResult.Status.OK, jsonCookies);
+              callbackContext.sendPluginResult(res);
+            } catch (Exception e) {
+              Log.e(TAG, "Exception: " + e.getMessage() + ":" + e.getStackTrace());
+              callbackContext.error(e.getMessage() + ":" + e.getStackTrace());
             }        
           }
         });

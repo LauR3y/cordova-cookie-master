@@ -42,6 +42,23 @@
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
+- (void)getCookies:(CDVInvokedUrlCommand*)command
+{
+    CDVPluginResult* pluginResult = nil;
+    NSString* urlString = [command.arguments objectAtIndex:0];
+    NSMutableDictionary *cookiesList = [NSMutableDictionary dictionary];
+    NSArray* cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:[NSURL URLWithString:urlString]];
+    
+    // all cookies of domain
+    [cookies enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        NSHTTPCookie *cookie = obj;
+        [cookiesList setObject:cookie.value forKey:cookie.name];
+    }];
+    
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:cookiesList];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
  - (void)setCookieValue:(CDVInvokedUrlCommand*)command
 {
     [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
